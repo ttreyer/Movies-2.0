@@ -6,7 +6,7 @@ app->defaults('message' => undef);
 
 helper sqlite => sub { state $sqlite = Mojo::SQLite->new('sqlite:tacos.db') };
 helper seen_movies => sub { shift->sqlite->db->select('movies', undef, { seen => { -not => undef } }, { -asc => ['seen'] })->hashes };
-helper unseen_movies => sub { shift->sqlite->db->select('movies', undef, { seen => undef }, { -desc => ['upvotes', 'id'] })->hashes };
+helper unseen_movies => sub { shift->sqlite->db->select('movies', undef, { seen => undef }, { -desc => ['upvotes'] })->hashes };
 helper upvote => sub { shift->sqlite->db->update('movies', { upvotes => \'upvotes + 1' }, { id => shift() }) };
 helper seen => sub { shift->sqlite->db->update('movies', { seen => time() }, { id => shift() }) };
 helper unseen => sub { shift->sqlite->db->update('movies', { seen => undef }, { id => shift() }) };
