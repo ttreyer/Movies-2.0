@@ -5,9 +5,8 @@ app->plugin('Config');
 app->defaults('message' => undef);
 
 helper sqlite => sub { state $sqlite = Mojo::SQLite->new('sqlite:tacos.db') };
-helper movies => sub { shift->sqlite->db->select('movies', undef, undef, { -desc => ['points', 'id'] })->hashes };
 helper seen_movies => sub { shift->sqlite->db->select('movies', undef, { seen => { -not => undef } }, { -asc => ['seen'] })->hashes };
-helper unseen_movies => sub { shift->sqlite->db->select('movies', undef, { seen => undef }, { -desc => ['points'] })->hashes };
+helper unseen_movies => sub { shift->sqlite->db->select('movies', undef, { seen => undef }, { -desc => ['upvotes', 'id'] })->hashes };
 helper upvote => sub { shift->sqlite->db->update('movies', { upvotes => \'upvotes + 1' }, { id => shift() }) };
 helper seen => sub { shift->sqlite->db->update('movies', { seen => time() }, { id => shift() }) };
 helper unseen => sub { shift->sqlite->db->update('movies', { seen => undef }, { id => shift() }) };
@@ -63,7 +62,6 @@ __DATA__
 
 @@ movies.html.ep
 % layout 'main';
-% my $movies = movies();
 
 %= form_for '/' => (method => 'POST') => begin
     %= label_for 'title' => 'Movie title'
